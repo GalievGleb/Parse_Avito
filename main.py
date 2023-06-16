@@ -2,6 +2,7 @@ import json
 
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
 driver = uc.Chrome()
 driver.get(
@@ -17,7 +18,9 @@ class AvitoParse:
         self.data = []
 
     def __set_up(self):
-        self.driver = uc.Chrome(version_main=self.version_main)
+        options = Options()
+        options.add_argument('--headless')
+        self.driver = uc.Chrome(version_main=self.version_main, options=options)
 
     def __get_url(self):
         self.driver.get(self.url)
@@ -41,8 +44,9 @@ class AvitoParse:
                 'url': url,
                 'price': price
             }
-            self.data.append(data)
-            # print(name, description, url, price)
+            if any([item.lover() in description.lower() for item in self.items]) and int(price)==0:
+                self.data.append(data)
+                print(name, description, url, price)
         self.__save_data()
 
     def __save_data(self):
@@ -60,5 +64,5 @@ if __name__ == "__main__":
         url='https://www.avito.ru/kazan/bytovaya_elektronika?cd=1&q=%D0%B1%D0%B5%D1%81%D0%BF%D0%BB%D0%B0%D1%82%D0%BD%D0%BE',
         count=1,
         version_main=108,
-        items=["iphone", ]
-    ).parse()
+        items=["телевизор", "пульт"]
+        ).parse()
